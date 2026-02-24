@@ -76,7 +76,9 @@ export function handleInlineTag(state: EditorParserState, token: Token): void {
 		initTagLen = token.tagLen,
 		str = state.lineStr;
 	if (token.type == Format.HIGHLIGHT) {
-		// New syntax: Color: (alphanumeric name followed by colon)
+		// New syntax: Color: only when opened with a single colon (:Color:text::)
+		// Double-colon opening (::text::) has no color tag
+		if (token.openLen >= 2) return;
 		if (token.validTag) {
 			if (str[offset - 1] == ":") return;
 			token.validTag = false;
