@@ -61,14 +61,14 @@ export const InlineRules: Record<InlineFormat, InlineFormatRule> = {
 		builtin: false
 	},
 	[Format.HIGHLIGHT]: {
-		char: "=",
+		char: ":",
 		length: 2,
 		exactLen: false,
 		allowSpace: true,
 		mustBeClosed: false,
 		class: "custom-highlight",
 		getEl: () => document.createElement("mark"),
-		builtin: true
+		builtin: false
 	},
 	[Format.CUSTOM_SPAN]: {
 		char: "!",

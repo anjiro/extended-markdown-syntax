@@ -33,7 +33,7 @@ There are six inline formattings that currently developed in this plugin:
 | spoiler     | `\|\|your text\|\|`    | <span style="background:#2e2e2e">your text</span>             |
 | superscript | `^your-text^`          | <sup>your-text</sup>                                          |
 | subscript   | `~your-text~`          | <sub>your-text</sub>                                          |
-| highlight   | `=={color}your text==` | <mark>your text</mark>                                        |
+| highlight   | `::{color}your text::` | <mark>your text</mark>                                        |
 | custom span | `!!{myCls}your text!!` | your text (should be rendered with the `myCls` class defined) |
 
 By default:
