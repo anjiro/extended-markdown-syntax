@@ -53,7 +53,7 @@ function _drawCustomHighlight(settings: PluginSettings, targetEl: HTMLElement): 
 		if (color) {
 			el.classList.add(baseCls, `${baseCls}-${color}`);
 			if (settings.showHlTagInPreviewMode) { return }
-			let from = 0, to = from + color.length + 2;
+			let from = 0, to = from + color.length + 1;
 			el.firstChild.replaceData(from, to - from, "");
 		}
 	});

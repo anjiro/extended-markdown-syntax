@@ -62,7 +62,7 @@ export const InlineRules: Record<InlineFormat, InlineFormatRule> = {
 	},
 	[Format.HIGHLIGHT]: {
 		char: ":",
-		length: 2,
+		length: 1,
 		exactLen: false,
 		allowSpace: true,
 		mustBeClosed: false,

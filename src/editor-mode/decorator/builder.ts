@@ -326,7 +326,9 @@ export class DecorationBuilder {
 				let cls = "cm-" + InlineRules[token.type as InlineFormat].class;
 				if (token.tagLen) {
 					let tagRange = getTagRange(token),
-						tagStr = visibleText.slice(tagRange.from - viewportStart + 1, tagRange.to - viewportStart - 1);
+						// HIGHLIGHT tag is "Color:" (skip trailing colon only); CUSTOM_SPAN tag is "{cls}" (skip braces)
+						tagStart = token.type == Format.HIGHLIGHT ? tagRange.from - viewportStart : tagRange.from - viewportStart + 1,
+						tagStr = visibleText.slice(tagStart, tagRange.to - viewportStart - 1);
 					if (token.type == Format.CUSTOM_SPAN) {
 						tagStr = trimTag(tagStr);
 						cls += " " + tagStr;
