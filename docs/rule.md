@@ -67,10 +67,10 @@ The color of each highlight can be customized by adding color tag exactly after 
 
 | Valid color tag            | Invalid color tag                                                     |
 | -------------------------- | --------------------------------------------------------------------- |
-| `=={color}highlight==`     | `== {color}highlight==`, `==a{color}highlight==`                      |
-| `=={abcAb--10}highlight==` | `=={ }highlight==,` `=={*_}highlight==`, `=={green_color}highlight==` |
+| `::{color}highlight::`     | `:: {color}highlight::`, `::a{color}highlight::`                      |
+| `::{abcAb--10}highlight::` | `::`{ }highlight::,` `::{*_}highlight::`, `::{green_color}highlight::` |
 
-Valid color tag will be added in the highlight classes, so `=={red}Red==` will be parsed in html tag as **`<span class="cm-custom-highlight cm-custom-highlight-red">`** in editor and **`<mark class="custom-highlight custom-highlight-red">`** in preview mode.
+Valid color tag will be added in the highlight classes, so `::{red}Red::` will be parsed in html tag as **`<span class="cm-custom-highlight cm-custom-highlight-red">`** in editor and **`<mark class="custom-highlight custom-highlight-red">`** in preview mode.
 
 #### 7. NOTE: Delimiter Escaping
 

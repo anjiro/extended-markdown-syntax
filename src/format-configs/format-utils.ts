@@ -44,6 +44,9 @@ export function configureDelimLookup(settings: PluginSettings): void {
 	if (settings.subscript & MarkdownViewMode.PREVIEW_MODE) {
 		PreviewDelimLookup[InlineRules[Format.SUBSCRIPT].char] = Format.SUBSCRIPT;
 	}
+	if (settings.customHighlight & MarkdownViewMode.PREVIEW_MODE) {
+		PreviewDelimLookup[InlineRules[Format.HIGHLIGHT].char] = Format.HIGHLIGHT;
+	}
 	if (settings.customSpan & MarkdownViewMode.PREVIEW_MODE) {
 		PreviewDelimLookup[InlineRules[Format.CUSTOM_SPAN].char] = Format.CUSTOM_SPAN;
 	}

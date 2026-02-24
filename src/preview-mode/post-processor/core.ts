@@ -121,9 +121,6 @@ export class ReadingModeSyntaxExtender {
 	private _draw(sectionEl: HTMLElement, capsulated = true): void {
 		if (!this._isTargeted(sectionEl, capsulated)) return;
 
-		if (this._settings.customHighlight & MarkdownViewMode.PREVIEW_MODE)
-			_drawCustomHighlight(this._settings, sectionEl);
-
 		if (this._settings.fencedDiv & MarkdownViewMode.PREVIEW_MODE) {
 			let targetEl = capsulated ? sectionEl.firstElementChild : sectionEl;
 			if (targetEl instanceof HTMLParagraphElement)
@@ -131,6 +128,9 @@ export class ReadingModeSyntaxExtender {
 		}
 
 		this._parseInline(sectionEl, capsulated);
+
+		if (this._settings.customHighlight & MarkdownViewMode.PREVIEW_MODE)
+			_drawCustomHighlight(this._settings, sectionEl);
 
 		if (this._settings.customSpan & MarkdownViewMode.PREVIEW_MODE)
 			_drawCustomSpan(this._settings, sectionEl);

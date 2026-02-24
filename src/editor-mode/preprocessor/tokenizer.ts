@@ -129,10 +129,11 @@ export const Tokenizer = {
 		let spec = _retrieveDelimSpec(type, Delimiter.OPEN),
 			// Verifiy that the delimiter was valid and gets its length.
 			{ valid, length: openLen } = _validateDelim(state.lineStr, state.offset, spec);
+		// If it isn't valid, then abort it without advancing, so inline
+		// delimiters sharing the same character can still be processed.
+		if (!valid) return false;
 		// Advance along the given delimiter length.
 		state.advance(openLen);
-		// If it isn't valid, then abort it.
-		if (!valid) return false;
 		let token: Token = {
 			type,
 			level: TokenLevel.BLOCK,

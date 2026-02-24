@@ -64,7 +64,7 @@ export class PreviewModeParser {
 				this._offset++;
 				continue;
 			}
-			if (!type || type == Format.HIGHLIGHT) {
+			if (!type) {
 				this._offset++;
 				continue;
 			}

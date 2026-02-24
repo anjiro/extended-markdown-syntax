@@ -714,8 +714,7 @@ export class EditorParser {
 			} else if (nodeType == "table_sep") {
 				state.queue.resolve(Formats.ALL_INLINE, false, false);
 				state.advance();
-			} else if (type && (type != Format.HIGHLIGHT || nodeType == "hl_delim")) {
-				// Highlight already be parsed by builtin parser.
+			} else if (type) {
 				Tokenizer.inline(state, type);
 			} else if (!state.advance()) {
 				break;
