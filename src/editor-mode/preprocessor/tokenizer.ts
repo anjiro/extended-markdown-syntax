@@ -74,24 +74,40 @@ function _handleClosingDelim(state: EditorParserState, token: Token, closeLen: n
 export function handleInlineTag(state: EditorParserState, token: Token): void {
 	let offset = state.offset,
 		initTagLen = token.tagLen,
-		str = state.lineStr,
-		noSpace = token.type == Format.HIGHLIGHT;
-	if (token.validTag) {
-		if (str[offset - 1] == "}") return;
-		token.validTag = false;
-	}
-	if (token.tagLen == 0) {
-		if (str[offset] != "{") return;
-		token.tagLen++;
-		offset++;
-	}
-	for (let char = str[offset]; offset < str.length; char = str[++offset]) {
-		if (!_isAlphanumeric(char) && char != "-" && (char != " " || noSpace)) break;
-		token.tagLen++;
-	}
-	if (token.tagLen > 1 && str[offset] == "}") {
-		token.validTag = true;
-		token.tagLen++;
+		str = state.lineStr;
+	if (token.type == Format.HIGHLIGHT) {
+		// New syntax: Color: (alphanumeric name followed by colon)
+		if (token.validTag) {
+			if (str[offset - 1] == ":") return;
+			token.validTag = false;
+		}
+		for (let char = str[offset]; offset < str.length; char = str[++offset]) {
+			if (!_isAlphanumeric(char) && char != "-") break;
+			token.tagLen++;
+		}
+		if (token.tagLen > 0 && str[offset] == ":") {
+			token.validTag = true;
+			token.tagLen++;
+		}
+	} else {
+		// Existing syntax: {tag} (used by CUSTOM_SPAN)
+		if (token.validTag) {
+			if (str[offset - 1] == "}") return;
+			token.validTag = false;
+		}
+		if (token.tagLen == 0) {
+			if (str[offset] != "{") return;
+			token.tagLen++;
+			offset++;
+		}
+		for (let char = str[offset]; offset < str.length; char = str[++offset]) {
+			if (!_isAlphanumeric(char) && char != "-" && char != " ") break;
+			token.tagLen++;
+		}
+		if (token.tagLen > 1 && str[offset] == "}") {
+			token.validTag = true;
+			token.tagLen++;
+		}
 	}
 	state.advance(token.tagLen - initTagLen);
 }

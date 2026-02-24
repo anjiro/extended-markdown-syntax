@@ -121,7 +121,11 @@ export class PreviewModeParser {
 
 		while (str[this._offset] == char) { this._offset++; length++ }
 		hasSpaceAfter = _isWhitespace(str[this._offset]);
-		if (hasOpen && hasSpaceBefore || !hasOpen && hasSpaceAfter || length != reqLength) return false;
+		// HIGHLIGHT: opening accepts 1 or 2 colons; closing requires exactly 2 colons
+		let invalidLength = type == Format.HIGHLIGHT
+			? (hasOpen ? length != 2 : length != 1 && length != 2)
+			: length != reqLength;
+		if (hasOpen && hasSpaceBefore || !hasOpen && hasSpaceAfter || invalidLength) return false;
 
 		let range = new Range();
 		range.setStart(this._curNode, this._offset - length);

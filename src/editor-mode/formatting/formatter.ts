@@ -27,6 +27,7 @@ class _FormatterState {
 	public level: TokenLevel;
 	public type: Format;
 	public delimStr: string;
+	public closeDelimStr: string;
 	public tagStr: string | undefined;
 	public precise: boolean;
 	public changes: ChangeSpec[] = [];
@@ -50,15 +51,28 @@ class _FormatterState {
 		} else {
 			this.selectionRanges = selectionObserver.selection.ranges.map(range => range);
 		}
-		if (tagStr && this.level == TokenLevel.INLINE) {
-			this.tagStr = "{" + tagStr + "}";
-		} else if (this.level == TokenLevel.BLOCK) {
-			this.tagStr += "\n";
-		}
 		let { char, length: delimLen } = this.level == TokenLevel.INLINE
 			? InlineRules[type as InlineFormat]
 			: BlockRules[type as BlockFormat];
 		this.delimStr = char.padEnd(delimLen, char);
+		this.closeDelimStr = this.delimStr;
+
+		if (type == Format.HIGHLIGHT) {
+			// Closing is always "::" regardless of whether there is a tag
+			this.closeDelimStr = "::";
+			if (tagStr) {
+				// Opening: ":" + "Color:" = ":Color:", closing: "::"
+				this.tagStr = tagStr + ":";
+				this.delimStr = ":";
+			} else {
+				// No-color: opening and closing both "::"
+				this.delimStr = "::";
+			}
+		} else if (tagStr && this.level == TokenLevel.INLINE) {
+			this.tagStr = "{" + tagStr + "}";
+		} else if (this.level == TokenLevel.BLOCK) {
+			this.tagStr += "\n";
+		}
 	}
 
 	public get curRange(): SelectionRange {
@@ -174,7 +188,7 @@ export class Formatter {
 	 * **Exclusive to inline formatting use.**
 	 */
 	private _wrap(detectWord = true): void {
-		let { curRange, delimStr, tagStr } = this.state;
+		let { curRange, delimStr, closeDelimStr, tagStr } = this.state;
 		// If the current selection is actually an empty cursor, attempt to use
 		// word range if any.
 		if (curRange.empty) {
@@ -192,7 +206,7 @@ export class Formatter {
 		}
 		this.state.pushChange([
 			{ from: curRange.from, insert: delimStr + (tagStr ?? "") },
-			{ from: curRange.to, insert: delimStr }
+			{ from: curRange.to, insert: closeDelimStr }
 		]);
 	}
 
@@ -206,11 +220,11 @@ export class Formatter {
 	 * @param token should be in `INACTIVE` status.
 	 */
 	private _close(token: Token): void {
-		let { delimStr, tagStr } = this.state;
+		let { closeDelimStr, tagStr } = this.state;
 		if (supportTag(token.type) && tagStr) {
 			this.state.pushChange({ from: token.from + token.openLen, insert: tagStr });
 		}
-		this.state.pushChange({ from: token.to, insert: delimStr });
+		this.state.pushChange({ from: token.to, insert: closeDelimStr });
 	}
 
 	/**
@@ -224,17 +238,17 @@ export class Formatter {
 	 */
 	private _breakApart(token: Token): void {
 		let { openRange, tagRange, closeRange } = provideTokenPartsRanges(token),
-			{ curRange, delimStr } = this.state,
+			{ curRange, delimStr, closeDelimStr } = this.state,
 			tagStr = this.state.doc.sliceString(tagRange.from, tagRange.to);
 		// Remove opening delimiter when the current range touched it. Otherwise,
-		// insert corresponding delimiter at the start offset.
+		// insert corresponding closing delimiter at the start offset.
 		if (isTouched(curRange.from, openRange)) {
 			this.state.pushChange(openRange);
 		} else {
-			this.state.pushChange({ from: curRange.from, insert: delimStr });
+			this.state.pushChange({ from: curRange.from, insert: closeDelimStr });
 		}
 		// Remove closing delimiter when the current range touched it. Otherwise,
-		// insert corresponding delimiter at the end offset.
+		// insert corresponding opening delimiter at the end offset.
 		if (isTouched(curRange.to, closeRange)) {
 			this.state.pushChange(closeRange);
 		} else {
@@ -254,7 +268,7 @@ export class Formatter {
 	 * **Exclusive to inline formatting use.**
 	 */
 	private _extend(): void {
-		let { curRange, delimStr, tagStr, curTokenMap, mappedTokens } = this.state,
+		let { curRange, delimStr, closeDelimStr, tagStr, curTokenMap, mappedTokens } = this.state,
 			tokens = this._parser.getTokens(this.state.level),
 			firstTokenIndex = curTokenMap?.[0],
 			lastTokenIndex = curTokenMap?.at(-1),
@@ -299,10 +313,10 @@ export class Formatter {
 				this.state.pushChange(tagRange);
 			}
 			if (lastToken!.status != TokenStatus.ACTIVE) {
-				this.state.pushChange({ from: curRange.to, insert: delimStr });
+				this.state.pushChange({ from: curRange.to, insert: closeDelimStr });
 			}
 		} else {
-			this.state.pushChange({ from: curRange.to, insert: delimStr });
+			this.state.pushChange({ from: curRange.to, insert: closeDelimStr });
 		}
 	}
 

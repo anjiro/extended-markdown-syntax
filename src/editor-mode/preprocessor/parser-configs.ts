@@ -84,7 +84,7 @@ export const ShifterNodeConfigs: Record<string, { query: string, getOpen: (node:
 
 export const SEMANTIC_INTERFERER_RE = /(?:codeblock|html|math)-(?:begin|end)|comment-(?:start|end)|cdata|tag$/;
 export const SKIPPED_NODE_RE = /table|code|formatting|escape|html|math|tag|url|barelink|atom|comment|string|meta|frontmatter|internal-link|hr(?!\w)/;
-export const COLOR_TAG_RE = /\{[a-z0-9-]+\}/iy;
+export const COLOR_TAG_RE = /[a-z0-9-]+:/iy;
 export const SHIFTER_RE = (() => {
 	let queries = "";
 	for (let el in ShifterNodeConfigs) {
